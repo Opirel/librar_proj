@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Menu</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h2 class="mt-4">Add New Customer</h2>
+        <form>
+            <div class="form-group">
+                <label for="CustomerName">Customer Name</label>
+                <input id="CustomerName" type="text" class="form-control" name="CustomerName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="City">City</label>
+                <input id="City" type="text" class="form-control" name="City" required>
+            </div>
+
+            <div class="form-group">
+                <label for="Age">Age</label>
+                <input id="Age" type="text" class="form-control" name="Age" required>
+            </div>
+
+            <button type="button" class="btn btn-primary" onclick="Add_customer()">Add a Customer</button>
+            <button type="button" class="btn btn-secondary" onclick="displayAllCustomrs()">Display Customers</button>
+        </form>
+
+        <div class="mt-4">
+            <input class="form-control mb-2" style="width: auto;" type="text" id="searchBox" placeholder="Search customer...">
+            <button class="btn btn-info" onclick="searchcustomer()">Search</button>
+        </div>
+
+        <h2>Customer List</h2>
+        <div id="CustomerContainer" class="mt-3"></div>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <script>
+        const MY_SERVER = "http://127.0.0.1:5000"
+        // add code
+        function Add_customer() {
+
+            axios.post(`${MY_SERVER}/customers`, {
+                CustomerName: document.getElementById('CustomerName').value,
+                City: document.getElementById('City').value,
+                Age: document.getElementById('Age').value
+            })
+                .then(response => {
+                    console.log(document.getElementById('CustomerName').value,);
+                    console.log(response.data);
+                    console.log("customer added");
+                    displayAllCustomrs()
+                })
+            // .catch(error => {
+            //     console.error(error);
+            // });
+        }
+
+        function displayAllCustomrs() {
+            axios.get(`${MY_SERVER}/customers`)
+                .then(response => {
+                    const loansContainer = document.getElementById('CustomerContainer');
+                    CustomerContainer.innerHTML = ''; // Clear existing content
+                    response.data.forEach(customer => {
+                        const div = document.createElement('div');
+                        div.textContent = `Customer ID: ${customer.CustomerID}, Customer name: ${customer.CustomerName}, city: ${customer.City}, age: ${customer.Age}`;
+                        loansContainer.appendChild(div);
+
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching customer:', error);
+                });
+        }
+
+
+
+        function searchcustomer() {   
+    const searchTerm = document.getElementById('searchBox').value;
+    axios.get(`${MY_SERVER}/customers`, { params: { query: searchTerm } })
+        .then(response => {
+            const CustomerContainer = document.getElementById('CustomerContainer');
+        
+            CustomerContainer.innerHTML = response.data.map(customer => `${customer.CustomerName} `);
+   
+        });console.log("after")
+        
+        .catch(error => {
+            console.error('Error searching customer:', error);
+        });
+}
+
+        // Initial load of loans
+        window.onload = displayAllCustomrs();
+
+    </script>
+</body>
+
+</html>

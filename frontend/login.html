@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Library Login</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <!-- Custom CSS for styling -->
+    <style>
+        .login-form {
+            width: 300px;
+            margin: 50px auto;
+            font-size: 15px;
+        }
+        .login-form form {
+            margin-bottom: 15px;
+            background: #f7f7f7;
+            box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+        }
+        .login-form h2 {
+            margin: 0 0 15px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.1.2/dist/axios.min.js"></script>
+    <!-- Include Toastify CSS and JS -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">Library System</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="books.html">Books</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="customers.html">Customers</a>
+                </li>
+                <li class="nav-item active">
+                    <a class="nav-link" href="login.html">Login<span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Login Form -->
+    <div class="login-form">
+        <form id="login_form">
+            <h2 class="text-center">Log in</h2>       
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="Username" required="required" id="username" value="opir5">
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" placeholder="Password" required="required" id="password" value="123">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary btn-block">Log in</button>
+            </div>       
+        </form>
+    </div>
+
+    <!-- Login Script -->
+    <script>
+        const MY_SERVER = "http://127.0.0.1:5000";
+        const login_form = document.getElementById("login_form");
+        login_form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const login_data = {
+                username: username,
+                password: password
+            };
+
+            axios.post(`${MY_SERVER}/login`, login_data)
+                .then(function (response) {
+                    const access_token = response.data.access_token;
+                    if (access_token) {
+                        localStorage.setItem('token', access_token);
+                        console.log(access_token);
+                        // Using Toastify for success notification
+                        Toastify({
+                            text: "Login successful!",
+                            backgroundColor: "green",
+                            duration: 3000
+                        }).showToast();
+                        console.log("worked");
+                        // setTimeout(function() {window.location.href = "books.html";}, 3000);
+                          // 3000 milliseconds = 3 seconds
+                        // window.location.href="books.html"
+                    } else {
+                        // Using Toastify for error notification
+                        Toastify({
+                            text: "Login failed",
+                            backgroundColor: "red",
+                            duration: 3000
+                        }).showToast();
+                    }
+                })
+                .catch(function (error) {
+                    console.error('Error during login:', error);
+                    // Using Toastify for error notification
+                    Toastify({
+                        text: "Login failed",
+                        backgroundColor: "red",
+                    }).showToast();
+                });
+        }) 
+        
+    </script>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+
+</html>

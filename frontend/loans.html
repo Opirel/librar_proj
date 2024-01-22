@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Loan Books</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        .loan-item {
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">Library System</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="books.html">Books</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="customers.html">Customers</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="login.html">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="register.html">Register</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Content -->
+    <div class="container">
+        <h2 class="mt-4">Loan a Book</h2>
+        <div class="container">
+            <h2 class="mt-4">Loan a Book</h2>
+            <form id="loanForm">
+                <div class="form-group">
+                    <label for="bookId">Book ID:</label>
+                    <input type="number" id="bookId" name="BookID" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="loanDate">Loan Date (YYYY-MM-DD):</label>
+                    <input type="date" id="loanDate" name="LoanDate" class="form-control">
+                </div>
+                <button type="button" class="btn btn-primary" onclick="createLoan()">Create Loan</button>
+            </form>
+    
+            <h2 class="mt-4">Existing Loans</h2>
+            <div id="loansList"></div>
+        </div>
+
+        <h2 class="mt-4">Existing Loans</h2>
+        <div id="loansList"></div>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <script>
+        const MY_SERVER = "http://127.0.0.1:5000";
+    
+        function createLoan() {
+            const token = localStorage.getItem('token'); // Get stored token
+            const bookId = document.getElementById('bookId').value;
+            const loanDate = document.getElementById('loanDate').value;
+            
+            console.log(token);
+            
+            axios.post(`${MY_SERVER}/loans`, {
+            
+                BookID: bookId,
+                LoanDate: loanDate
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            .then(
+                function (response) {
+                console.log(response);
+                alert('Loan created successfully!');
+                loadLoans(); // Reload the list of loans
+            })
+            .catch(function (error) {
+                console.error('Error creating loan:', error);
+                alert('Error creating loan!');
+            });
+        }
+
+
+    // display
+        function loadLoans() {
+        const token = localStorage.getItem('token'); // Get stored token
+        axios.get(`${MY_SERVER}/loans`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(function (response) {
+            const loansList = document.getElementById('loansList');
+            loansList.innerHTML = ''; // Clear existing list
+            response.data.forEach(loan => {
+                
+                // Only display loans that have not been returned
+                if (!loan.is_book_returned) {
+                    console.log(loan.is_book_returned);
+                    let returnButtonHTML = `<button onclick="returnLoan(${loan.LoanID})">Return book</button>`;
+    
+                    loansList.innerHTML += `
+                        <div class="loan-item" data-loan-id="${loan.LoanID}">
+                            Loan ID: ${loan.LoanID}, 
+                            Book ID: ${loan.BookID}, 
+                            Loan Date: ${loan.LoanDate}
+                            ${returnButtonHTML}
+                        </div>`;
+                }
+            });
+        })
+        .catch(function (error) {
+            console.error('Error loading loans:', error);
+        });
+    }
+    function returnLoan(loanId) {
+        const token = localStorage.getItem('token'); // Get stored token
+        axios.put(`${MY_SERVER}/loans/${loanId}`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(function (response) {
+            console.log('Loan returned successfully');
+            loadLoans(); // Reload the loans list
+        })
+        .catch(function (error) {
+            console.error('Error returning loan:', error);
+        });
+    }
+    
+        // Load loans when the page is ready
+        window.onload= loadLoans()
+        </script>
+</body>
+</html>
