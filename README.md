@@ -1,46 +1,29 @@
-create db-
-    books
-        bookID- done
-        bookName- done
-        author- done
-        YearPublished- done
-        type- done
+# Library Management System
 
-    customers
-        CustomerID- done
-        CustomerName- done
-        City- done
-        Age- done
-    
-    loans
-        CustomerID- done
-        BookID- done
-        LoanDate- done
-        ReturnDate- done
+## Introduction
+This project is a Library Management System built using Flask, a micro web framework written in Python. It allows users to manage book loans and track customer information in a library setting.
 
-GUI- not done
+## Features
+- User authentication and registration
+- CRUD operations for books, customers, and loans
+- JWT-based authorization for accessing protected endpoints
+- Search functionality for books and customers
 
-login- done-
+## Technologies Used
+- Flask
+- Flask-RESTful
+- Flask-JWT-Extended
+- Flask-SQLAlchemy
+- SQLite
+- Flask-CORS
 
-register-  done
+## Setup and Installation
 
-test units- not done
+### Prerequisites
+- Python 3.x
+- Pip (Python package installer)
 
-add new customer- done
-
-add new book- done
-
-add loan- done
-
-return book- not done
-
-display all books-  done
-
-display all customers-  done
-
-display all loans-  done
-
-find book by name-  done
-
-find customer by name-  done
-
+### Installation Steps
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Opirel/librar_proj.git
